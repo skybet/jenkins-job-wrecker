@@ -3,7 +3,7 @@ import sys
 from setuptools import setup, find_packages, Command
 from setuptools.command.test import test as TestCommand
 
-version = '1.4.0'
+version = '1.4.5'
 
 
 class PyTest(TestCommand):
@@ -72,7 +72,7 @@ setup(name="jenkins-job-wrecker",
                   ],
       keywords='jenkins xml yaml',
       author='ken dreyer',
-      author_email='kdreyer [at] redhat [dot] com',
+      author_email='kdreyer@redhat.com',
       url='https://github.com/ktdreyer/jenkins-job-wrecker',
       license='MIT',
       packages=find_packages(),

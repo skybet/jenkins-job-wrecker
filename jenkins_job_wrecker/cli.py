@@ -20,17 +20,22 @@ if is_py_v2:
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('jjwrecker')
 
-class literal_unicode(unicode): pass
+
+class literal_unicode(unicode):
+    pass
+
 
 def str_presenter(dumper, data):
-  if len(data.splitlines()) > 1:  # check for multiline string
-    # The dumper will not respect "style='|'" if it detects trailing
-    # whitespace on any line within the data. For scripts the trailing
-    # whitespace is not important.
-    lines = [l.strip() for l in data.splitlines()]
-    data = '\n'.join(lines)
-    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-  return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+    if len(data.splitlines()) > 1:  # check for multiline string
+        # The dumper will not respect "style='|'" if it detects trailing
+        # whitespace on any line within the data. For scripts the trailing
+        # whitespace is not important.
+        lines = [l.strip() for l in data.splitlines()]
+        data = '\n'.join(lines)
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data,
+                                       style='|')
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
 
 yaml.add_representer(str, str_presenter)
 yaml.add_representer(literal_unicode, str_presenter)
@@ -78,7 +83,7 @@ def root_to_yaml(root, name):
 
         raw = {}
         raw['xml'] = ET.tostring(root)
-        job['xml'] = {'raw':raw}
+        job['xml'] = {'raw': raw}
 
     return yaml.dump(build, default_flow_style=False, default_style=None)
 
@@ -108,6 +113,11 @@ def parse_args(args):
         '-i', '--ignore',
         nargs='*',
         help='Ignore some jobs in conversion.'
+    )
+    parser.add_argument(
+        '-o', '--output-dir',
+        default='output',
+        help='folder to store generated job definitions'
     )
     parser.add_argument(
         '-v', '--verbose',
@@ -144,7 +154,7 @@ def main():
 
     # Args are ok. Proceed with writing output
     try:
-        os.mkdir('output')
+        os.mkdir(args.output_dir)
     # We don't care if "output" dir already exists.
     except OSError as exception:
         if exception.errno != errno.EEXIST:
@@ -155,7 +165,7 @@ def main():
         root = get_xml_root(filename=args.filename)
         yaml = root_to_yaml(root, args.name)
         # Create output directory structure where needed
-        yaml_filename = os.path.join('output', args.name + '.yml')
+        yaml_filename = os.path.join(args.output_dir, args.name + '.yml')
         path = os.path.dirname(yaml_filename)
         try:
             os.makedirs(path)

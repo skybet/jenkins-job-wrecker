@@ -1,5 +1,4 @@
 # encoding=utf8
-from helpers import gen_raw
 from importlib import import_module
 from inspect import getmembers, isfunction, isclass
 from jenkins_job_wrecker.helpers import gen_raw
@@ -33,7 +32,7 @@ class Registry(object):
         if len(self.project_types) == 0:
             valid_types = {'project': 'freestyle',
                            'matrix-project': 'matrix',
-                           'flow-definition': 'flow'}
+                           'com.cloudbees.plugins.flow.BuildFlow': 'flow'}
             for name, item in self._get_entry_points('jenkins_job_wrecker.projects').iteritems():
                 valid_types.update(item)
             self.project_types.update(valid_types)
@@ -68,7 +67,7 @@ class Registry(object):
         self.registry['handlers'] = {}
         pkgpath = dirname(jenkins_job_wrecker.modules.__file__)
         for name in [name
-                     for  _, name, _ in iter_modules([pkgpath])
+                     for _, name, _ in iter_modules([pkgpath])
                      if name not in ['handlers', 'base']]:
             my_mod = import_module('jenkins_job_wrecker.modules.%s' % name)
             my_obj = getattr(my_mod, name.capitalize())
